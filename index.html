@@ -15,6 +15,7 @@
     --black-soft: #2b2b2b;
     --white: #ffffff;
     --gray: #f5f5f5;
+    --red: #e63946;
   }
 
   html { scroll-behavior: smooth; }
@@ -27,7 +28,6 @@
     position: relative;
   }
 
-  /* === پس‌زمینه‌ی جذاب چندلایه === */
   body::before {
     content: '';
     position: fixed;
@@ -41,7 +41,6 @@
       linear-gradient(135deg, #fffdf5 0%, #ffffff 40%, #fffbe8 100%);
   }
 
-  /* === خطوط دفتر مشقی (کاغذ کلاسور) === */
   body::after {
     content: '';
     position: fixed;
@@ -61,7 +60,6 @@
     100% { background-position: 40px 40px, 40px 40px; }
   }
 
-  /* === هاله‌ی زرد چرخان === */
   .bg-glow {
     position: fixed;
     top: -30%;
@@ -90,7 +88,6 @@
     66% { transform: translate(-30px, 30px) scale(0.95); }
   }
 
-  /* === مدادهای شناور === */
   .floating-pencils { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
   .floating-pencils span { position: absolute; font-size: 2.5rem; opacity: 0.15; animation: floatPencil 15s linear infinite; }
   @keyframes floatPencil {
@@ -99,19 +96,51 @@
     100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
   }
 
-  /* === هدر === */
   header {
     background: var(--black); color: var(--white); padding: 1.2rem 2rem;
     display: flex; align-items: center; justify-content: space-between;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     position: sticky; top: 0; z-index: 100;
     animation: slideDown 0.6s ease;
+    gap: 1rem;
   }
   @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
   header h1 { display: flex; align-items: center; gap: 0.7rem; font-size: 1.5rem; font-weight: 900; }
   header h1 .pencil { display: inline-block; animation: wiggle 2.5s ease-in-out infinite; }
   @keyframes wiggle { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
   header h1 span.yellow { color: var(--yellow); }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .icon-header-btn {
+    background: var(--yellow);
+    color: var(--black);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 0 var(--yellow-dark);
+  }
+
+  .icon-header-btn:hover {
+    transform: translateY(-3px) rotate(-8deg);
+    box-shadow: 0 7px 0 var(--yellow-dark), 0 10px 20px rgba(255,214,10,0.4);
+  }
+
+  .icon-header-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--yellow-dark);
+  }
 
   .add-btn {
     background: var(--yellow); color: var(--black); border: none;
@@ -124,7 +153,6 @@
   .add-btn:hover { transform: translateY(-3px); box-shadow: 0 7px 0 var(--yellow-dark), 0 10px 20px rgba(255,214,10,0.4); }
   .add-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--yellow-dark); }
 
-  /* === فیلترها === */
   .filters { display: flex; flex-wrap: wrap; gap: 0.7rem; padding: 1.5rem 2rem 0.5rem; justify-content: center; }
   .filter-btn {
     background: var(--white); border: 2px solid var(--black); color: var(--black);
@@ -134,7 +162,6 @@
   .filter-btn:hover { background: var(--yellow); transform: translateY(-2px); }
   .filter-btn.active { background: var(--black); color: var(--yellow); transform: scale(1.05); }
 
-  /* === جستجو === */
   .search-box { display: flex; justify-content: center; padding: 1rem 2rem 0; }
   .search-box input {
     width: 100%; max-width: 500px; padding: 0.8rem 1.2rem;
@@ -144,7 +171,6 @@
   }
   .search-box input:focus { border-color: var(--yellow-dark); box-shadow: 0 0 0 4px rgba(255,214,10,0.3); }
 
-  /* === گرید یادداشت‌ها === */
   .notes-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -156,7 +182,6 @@
     grid-auto-rows: minmax(200px, auto);
   }
 
-  /* === کارت یادداشت === */
   .note {
     background: var(--yellow);
     border-radius: 12px;
@@ -225,7 +250,6 @@
     flex-shrink: 0;
   }
 
-  /* === محتوای یادداشت با اسکرول داخلی === */
   .note-content {
     font-size: 0.9rem;
     line-height: 1.7;
@@ -270,7 +294,6 @@
   }
   .icon-btn:hover { background: var(--black); color: var(--yellow); transform: scale(1.15) rotate(8deg); }
 
-  /* === حالت خالی === */
   .empty-state {
     grid-column: 1 / -1;
     text-align: center;
@@ -282,7 +305,7 @@
   .empty-state .emoji { font-size: 4rem; display: block; margin-bottom: 1rem; animation: wiggle 2s ease-in-out infinite; }
   .empty-state p { font-size: 1.1rem; opacity: 0.7; }
 
-  /* === مودال === */
+  /* === مودال‌ها === */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.6);
@@ -303,6 +326,11 @@
   .modal-overlay.active .modal { transform: scale(1) translateY(0); }
   .modal h2 { margin-bottom: 1.5rem; color: var(--black); display: flex; align-items: center; gap: 0.6rem; font-size: 1.3rem; }
 
+  .modal.danger { border-top-color: var(--red); }
+  .modal.danger h2 { color: var(--red); }
+
+  .modal p { color: var(--black-soft); line-height: 1.7; margin-bottom: 1.5rem; }
+
   .form-group { margin-bottom: 1.2rem; }
   .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; color: var(--black); }
   .form-group input,
@@ -322,7 +350,7 @@
     box-shadow: 0 0 0 4px rgba(255,214,10,0.25);
   }
 
-  .modal-actions { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 1.5rem; }
+  .modal-actions { display: flex; gap: 0.8rem; justify-content: flex-end; margin-top: 1.5rem; flex-wrap: wrap; }
   .btn {
     padding: 0.75rem 1.5rem; border-radius: 50px; border: none;
     cursor: pointer; font-weight: 700; font-size: 0.95rem;
@@ -333,12 +361,51 @@
   .btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--yellow-dark); }
   .btn-secondary { background: var(--gray); color: var(--black); }
   .btn-secondary:hover { background: #e0e0e0; }
+  .btn-danger { background: var(--red); color: var(--white); box-shadow: 0 4px 0 #a52832; }
+  .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #a52832; }
+  .btn-danger:active { transform: translateY(2px); box-shadow: 0 1px 0 #a52832; }
 
-  /* === ریسپانسیو === */
+  /* === Import options === */
+  .import-options { display: flex; flex-direction: column; gap: 0.8rem; margin: 1rem 0; }
+  .import-option {
+    display: flex; align-items: center; gap: 0.8rem;
+    padding: 1rem; border: 2px solid #e0e0e0;
+    border-radius: 12px; cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .import-option:hover { border-color: var(--yellow-dark); background: #fffbe8; }
+  .import-option input[type="radio"] { accent-color: var(--yellow-dark); width: 20px; height: 20px; flex-shrink: 0; }
+  .import-option label { cursor: pointer; flex: 1; font-weight: 500; display: block; }
+  .import-option small { display: block; opacity: 0.6; font-size: 0.75rem; margin-top: 0.2rem; font-weight: 400; }
+
+  /* === Toast === */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--black);
+    color: var(--yellow);
+    padding: 1rem 1.8rem;
+    border-radius: 50px;
+    font-weight: 700;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.error { background: var(--red); color: var(--white); }
+
   @media (max-width: 600px) {
     header { padding: 1rem; flex-direction: column; gap: 0.8rem; }
     header h1 { font-size: 1.2rem; }
     .add-btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    .header-actions { width: 100%; justify-content: center; flex-wrap: wrap; }
     .notes-container { padding: 1.2rem; gap: 1rem; grid-template-columns: 1fr; }
     .filters { padding: 1rem 0.8rem 0.5rem; }
     .modal { padding: 1.5rem; }
@@ -346,7 +413,6 @@
     .note-content { max-height: 180px; }
   }
 
-  /* === اسکرول‌بار اصلی === */
   ::-webkit-scrollbar { width: 10px; }
   ::-webkit-scrollbar-track { background: var(--gray); }
   ::-webkit-scrollbar-thumb { background: var(--yellow-dark); border-radius: 10px; }
@@ -355,36 +421,35 @@
 </head>
 <body>
 
-<!-- هاله‌های زرد چرخان پس‌زمینه -->
 <div class="bg-glow"></div>
 <div class="bg-glow two"></div>
 
-<!-- مدادهای شناور -->
 <div class="floating-pencils" id="floatingPencils"></div>
 
-<!-- هدر -->
 <header>
   <h1>
     <span class="pencil">✏️</span>
     دفترچه <span class="yellow">یادداشت</span>
   </h1>
-  <button class="add-btn" onclick="openModal()">
-    <span>➕</span> یادداشت جدید
-  </button>
+  <div class="header-actions">
+    <button class="icon-header-btn" onclick="openExportModal()" title="دانلود بکاپ">⬇️</button>
+    <button class="icon-header-btn" onclick="document.getElementById('importFile').click()" title="بارگذاری بکاپ">⬆️</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importNotes(event)">
+    <button class="add-btn" onclick="openModal()">
+      <span>➕</span> یادداشت جدید
+    </button>
+  </div>
 </header>
 
-<!-- جستجو -->
 <div class="search-box">
   <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
 </div>
 
-<!-- فیلترها -->
 <div class="filters" id="filters"></div>
 
-<!-- کانتینر یادداشت‌ها -->
 <div class="notes-container" id="notesContainer"></div>
 
-<!-- مودال -->
+<!-- === مودال افزودن/ویرایش === -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h2 id="modalTitle">✏️ یادداشت جدید</h2>
@@ -416,19 +481,82 @@
   </div>
 </div>
 
+<!-- === مودال تایید حذف === -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal danger">
+    <h2>🗑️ حذف یادداشت</h2>
+    <p>آیا مطمئنی می‌خوای این یادداشت رو حذف کنی؟</p>
+    <p style="font-weight: 700; color: var(--black); background: #fffbe8; padding: 0.8rem; border-radius: 10px; border-right: 4px solid var(--yellow);" id="deleteNoteTitle"></p>
+    <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">⚠️ این عمل قابل بازگشت نیست!</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">انصراف</button>
+      <button type="button" class="btn btn-danger" onclick="confirmDelete()">بله، حذف کن</button>
+    </div>
+  </div>
+</div>
+
+<!-- === مودال Export === -->
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h2>⬇️ دانلود بکاپ</h2>
+    <p>می‌خوای از همه‌ی یادداشت‌هات یه فایل پشتیبان (JSON) بگیری؟</p>
+    <p style="font-weight: 700; color: var(--black); background: #fffbe8; padding: 0.8rem; border-radius: 10px; border-right: 4px solid var(--yellow);">
+      📊 تعداد یادداشت‌ها: <span id="exportCount">0</span>
+    </p>
+    <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">💾 این فایل روی کامپیوترت ذخیره می‌شه و می‌تونی هر وقت خواستی Importش کنی.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeExportModal()">انصراف</button>
+      <button type="button" class="btn btn-primary" onclick="confirmExport()">✅ دانلود کن</button>
+    </div>
+  </div>
+</div>
+
+<!-- === مودال Import === -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <h2>⬆️ بارگذاری بکاپ</h2>
+    <p>
+      <strong id="importCount">0</strong> یادداشت توی فایل پیدا شد. چطور می‌خوای اضافه بشن؟
+    </p>
+
+    <div class="import-options">
+      <label class="import-option">
+        <input type="radio" name="importMode" value="merge" checked>
+        <div>
+          <label>➕ افزودن به یادداشت‌های موجود</label>
+          <small>یادداشت‌های فعلیت پاک نمی‌شن، جدیدها اضافه می‌شن</small>
+        </div>
+      </label>
+
+      <label class="import-option">
+        <input type="radio" name="importMode" value="replace">
+        <div>
+          <label>🔄 جایگزینی کامل</label>
+          <small>همه یادداشت‌های فعلیت پاک می‌شن و فقط فایل بارگذاری می‌شه</small>
+        </div>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeImportModal()">انصراف</button>
+      <button type="button" class="btn btn-primary" onclick="confirmImport()">✅ تایید</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // ================================================================
-  //  حالت ذخیره‌سازی:
-  //  - فعلاً: localStorage (داخل مرورگر خودت)
-  //  - بعداً که Cloudflare رو راه انداختی، مقدار USE_CLOUDFLARE رو true کن
-  //    و API_URL رو با آدرس Worker خودت جایگزین کن
+  //  ⚙️ تنظیمات
   // ================================================================
-const USE_CLOUDFLARE = true;
-const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
+  const USE_CLOUDFLARE = true;
+  const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
+  // ⚠️ اگه آدرس Worker تو فرق داره، این خط رو عوض کن
 
   let notes = [];
   let currentFilter = 'همه';
   const categories = ['همه', 'مهم', 'آموزش', 'کار', 'شخصی', 'ایده'];
+  let pendingDeleteId = null;
+  let pendingImportData = null;
 
   // === مدادهای شناور ===
   const pencilsContainer = document.getElementById('floatingPencils');
@@ -443,7 +571,7 @@ const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
     pencilsContainer.appendChild(span);
   }
 
-  // === ذخیره‌سازی محلی ===
+  // === ذخیره‌سازی محلی (فقط حالت غیر Cloudflare) ===
   function saveToLocalStorage() {
     localStorage.setItem('myNotes', JSON.stringify(notes));
   }
@@ -518,7 +646,7 @@ const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
           <div class="note-date">${note.date}</div>
           <div class="note-actions">
             <button class="icon-btn" onclick="editNote('${note.id}')" title="ویرایش">✏️</button>
-            <button class="icon-btn" onclick="deleteNote('${note.id}')" title="حذف">🗑️</button>
+            <button class="icon-btn" onclick="askDeleteNote('${note.id}')" title="حذف">🗑️</button>
           </div>
         </div>
       </div>
@@ -531,7 +659,7 @@ const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
     return div.innerHTML;
   }
 
-  // === مودال ===
+  // === مودال افزودن/ویرایش ===
   function openModal(note = null) {
     const overlay = document.getElementById('modalOverlay');
     const title = document.getElementById('modalTitle');
@@ -557,14 +685,6 @@ const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
     document.getElementById('modalOverlay').classList.remove('active');
   }
 
-  document.getElementById('modalOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'modalOverlay') closeModal();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-  });
-
   // === ذخیره یادداشت ===
   async function saveNote(e) {
     e.preventDefault();
@@ -589,63 +709,4 @@ const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
           await fetch(`${API_URL}/notes/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(noteData),
-          });
-        } else {
-          await fetch(`${API_URL}/notes`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(noteData),
-          });
-        }
-        await loadNotes();
-        closeModal();
-      } catch (err) {
-        alert('خطا در ذخیره‌سازی: ' + err.message);
-      }
-    } else {
-      if (id) {
-        const idx = notes.findIndex(n => n.id == id);
-        if (idx > -1) notes[idx] = noteData;
-      } else {
-        notes.unshift(noteData);
-      }
-      saveToLocalStorage();
-      renderNotes();
-      closeModal();
-    }
-  }
-
-  function editNote(id) {
-    const note = notes.find(n => n.id == id);
-    if (note) openModal(note);
-  }
-
-  // === حذف ===
-  async function deleteNote(id) {
-    const noteEl = document.querySelector(`.note[data-id="${id}"]`);
-    if (noteEl) noteEl.classList.add('removing');
-
-    setTimeout(async () => {
-      if (USE_CLOUDFLARE) {
-        try {
-          await fetch(`${API_URL}/notes/${id}`, { method: 'DELETE' });
-          await loadNotes();
-        } catch (err) {
-          alert('خطا در حذف: ' + err.message);
-        }
-      } else {
-        notes = notes.filter(n => n.id != id);
-        saveToLocalStorage();
-        renderNotes();
-      }
-    }, 280);
-  }
-
-  // === راه‌اندازی ===
-  renderFilters();
-  loadNotes();
-</script>
-
-</body>
-</html>
+            body
