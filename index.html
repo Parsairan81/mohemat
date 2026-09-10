@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✏️ دفترچه یادداشت من</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Vazirmatn', sans-serif;
+  }
+
+  :root {
+    --yellow: #ffd60a;
+    --yellow-dark: #ffc300;
+    --black: #1a1a1a;
+    --black-soft: #2b2b2b;
+    --white: #ffffff;
+    --gray: #f5f5f5;
+  }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* === پس‌زمینه انیمیشنی مدادها === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(255,214,10,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(255,214,10,0.15) 0%, transparent 40%);
+    z-index: -2;
+  }
+
+  .floating-pencils {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .floating-pencils span {
+    position: absolute;
+    font-size: 2.5rem;
+    opacity: 0.15;
+    animation: floatPencil 15s linear infinite;
+  }
+
+  @keyframes floatPencil {
+    0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.2; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* === هدر === */
+  header {
+    background: var(--black);
+    color: var(--white);
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    animation: slideDown 0.6s ease;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
+
+  header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 1.5rem;
+    font-weight: 900;
+  }
+
+  header h1 .pencil {
+    display: inline-block;
+    animation: wiggle 2.5s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+  }
+
+  header h1 span.yellow {
+    color: var(--yellow);
+  }
+
+  /* === دکمه اصلی === */
+  .add-btn {
+    background: var(--yellow);
+    color: var(--black);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 0 var(--yellow-dark);
+  }
+
+  .add-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 var(--yellow-dark), 0 10px 20px rgba(255,214,10,0.4);
+  }
+
+  .add-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 var(--yellow-dark);
+  }
+
+  /* === فیلتر دسته‌بندی === */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding: 1.5rem 2rem 0.5rem;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    background: var(--white);
+    border: 2px solid var(--black);
+    color: var(--black);
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+  }
+
+  .filter-btn:hover {
+    background: var(--yellow);
+    transform: translateY(-2px);
+  }
+
+  .filter-btn.active {
+    background: var(--black);
+    color: var(--yellow);
+    transform: scale(1.05);
+  }
+
+  /* === جستجو === */
+  .search-box {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 2rem 0;
+  }
+
+  .search-box input {
+    width: 100%;
+    max-width: 500px;
+    padding: 0.8rem 1.2rem;
+    border: 2px solid var(--black);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    background: var(--white);
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .search-box input:focus {
+    border-color: var(--yellow-dark);
+    box-shadow: 0 0 0 4px rgba(255,214,10,0.3);
+  }
+
+  /* === گرید یادداشت‌ها === */
+  .notes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.3rem;
+    padding: 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .note {
+    background: var(--yellow);
+    border-radius: 12px;
+    padding: 1.2rem;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center;
+    border-top: 5px solid var(--black);
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .note:hover {
+    transform: translateY(-6px) rotate(-1deg);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+  }
+
+  .note.removing {
+    animation: popOut 0.3s ease forwards;
+  }
+
+  @keyframes popOut {
+    to { transform: scale(0.3) rotate(15deg); opacity: 0; }
+  }
+
+  /* آیکون مداد تزئینی روی کارت */
+  .note::after {
+    content: '✏️';
+    position: absolute;
+    bottom: 8px;
+    left: 12px;
+    font-size: 1.2rem;
+    opacity: 0.35;
+  }
+
+  .note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .note-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--black);
+    word-break: break-word;
+    flex: 1;
+  }
+
+  .note-category {
+    background: var(--black);
+    color: var(--yellow);
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .note-content {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--black-soft);
+    word-break: break-word;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+  }
+
+  .note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.6rem;
+    border-top: 1px dashed rgba(0,0,0,0.2);
+  }
+
+  .note-date {
+    font-size: 0.7rem;
+    color: var(--black-soft);
+    opacity: 0.7;
+  }
+
+  .note-actions {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .icon-btn {
+    background: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  }
+
+  .icon-btn:hover {
+    background: var(--black);
+    color: var(--yellow);
+    transform: scale(1.15) rotate(8deg);
+  }
+
+  /* === حالت خالی === */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--black-soft);
+    animation: fadeIn 0.6s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .empty-state .emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: wiggle 2s ease-in-out infinite;
+  }
+
+  .empty-state p {
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  /* === مودال === */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 1rem;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    transform: scale(0.7) translateY(30px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-top: 8px solid var(--yellow);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.active .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal h2 {
+    margin-bottom: 1.5rem;
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--black);
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.3s ease;
+    background: var(--white);
+    color: var(--black);
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--yellow-dark);
+    box-shadow: 0 0 0 4px rgba(255,214,10,0.25);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--black);
+    box-shadow: 0 4px 0 var(--yellow-dark);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 var(--yellow-dark);
+  }
+
+  .btn-primary:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--yellow-dark);
+  }
+
+  .btn-secondary {
+    background: var(--gray);
+    color: var(--black);
+  }
+
+  .btn-secondary:hover {
+    background: #e0e0e0;
+  }
+
+  /* === ریسپانسیو === */
+  @media (max-width: 600px) {
+    header {
+      padding: 1rem;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    header h1 { font-size: 1.2rem; }
+    .add-btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    .notes-container { padding: 1.2rem; gap: 1rem; }
+    .filters { padding: 1rem 0.8rem 0.5rem; }
+    .modal { padding: 1.5rem; }
+  }
+
+  /* === اسکرول‌بار سفارشی === */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--gray); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--yellow-dark);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--black); }
+</style>
+</head>
+<body>
+
+<!-- مدادهای شناور پس‌زمینه -->
+<div class="floating-pencils" id="floatingPencils"></div>
+
+<!-- هدر -->
+<header>
+  <h1>
+    <span class="pencil">✏️</span>
+    دفترچه <span class="yellow">یادداشت</span>
+  </h1>
+  <button class="add-btn" onclick="openModal()">
+    <span>➕</span> یادداشت جدید
+  </button>
+</header>
+
+<!-- جستجو -->
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
+</div>
+
+<!-- فیلتر دسته‌بندی -->
+<div class="filters" id="filters"></div>
+
+<!-- کانتینر یادداشت‌ها -->
+<div class="notes-container" id="notesContainer"></div>
+
+<!-- مودال افزودن/ویرایش -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">✏️ یادداشت جدید</h2>
+    <form id="noteForm" onsubmit="saveNote(event)">
+      <input type="hidden" id="noteId">
+      <div class="form-group">
+        <label>عنوان</label>
+        <input type="text" id="noteTitle" placeholder="عنوان یادداشت..." required>
+      </div>
+      <div class="form-group">
+        <label>متن یادداشت</label>
+        <textarea id="noteContent" placeholder="چیزی مهم رو بنویس..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>دسته‌بندی</label>
+        <select id="noteCategory">
+          <option value="مهم">⭐ مهم</option>
+          <option value="آموزش">📚 آموزش</option>
+          <option value="کار">💼 کار</option>
+          <option value="شخصی">🏠 شخصی</option>
+          <option value="ایده">💡 ایده</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">انصراف</button>
+        <button type="submit" class="btn btn-primary">💾 ذخیره</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // === داده‌ها ===
+  let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
+  let currentFilter = 'همه';
+
+  const categories = ['همه', 'مهم', 'آموزش', 'کار', 'شخصی', 'ایده'];
+
+  // === مدادهای شناور ===
+  const pencilsContainer = document.getElementById('floatingPencils');
+  const pencilEmojis = ['✏️', '📝', '🖊️', '📌', '⭐'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = pencilEmojis[Math.floor(Math.random() * pencilEmojis.length)];
+    span.style.left = Math.random() * 100 + '%';
+    span.style.animationDelay = Math.random() * 15 + 's';
+    span.style.animationDuration = (12 + Math.random() * 10) + 's';
+    span.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+    pencilsContainer.appendChild(span);
+  }
+
+  // === ذخیره در localStorage ===
+  function saveToStorage() {
+    localStorage.setItem('myNotes', JSON.stringify(notes));
+  }
+
+  // === رندر فیلترها ===
+  function renderFilters() {
+    const container = document.getElementById('filters');
+    container.innerHTML = categories.map(cat => `
+      <button class="filter-btn ${currentFilter === cat ? 'active' : ''}" 
+              onclick="setFilter('${cat}')">
+        ${cat}
+      </button>
+    `).join('');
+  }
+
+  function setFilter(cat) {
+    currentFilter = cat;
+    renderFilters();
+    renderNotes();
+  }
+
+  // === رندر یادداشت‌ها ===
+  function renderNotes() {
+    const container = document.getElementById('notesContainer');
+    const search = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    let filtered = notes.filter(n => {
+      const matchCat = currentFilter === 'همه' || n.category === currentFilter;
+      const matchSearch = !search || 
+        n.title.toLowerCase().includes(search) || 
+        n.content.toLowerCase().includes(search);
+      return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <span class="emoji">📝</span>
+          <p>${notes.length === 0 ? 'هنوز یادداشتی نداری! یه یادداشت جدید بساز ✏️' : 'چیزی پیدا نشد!'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(note => `
+      <div class="note" data-id="${note.id}">
+        <div class="note-header">
+          <div class="note-title">${escapeHtml(note.title)}</div>
+          <div class="note-category">${escapeHtml(note.category)}</div>
+        </div>
+        <div class="note-content">${escapeHtml(note.content)}</div>
+        <div class="note-footer">
+          <div class="note-date">${note.date}</div>
+          <div class="note-actions">
+            <button class="icon-btn" onclick="editNote(${note.id})" title="ویرایش">✏️</button>
+            <button class="icon-btn" onclick="deleteNote(${note.id})" title="حذف">🗑️</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // === ضد XSS ===
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // === مودال ===
+  function openModal(note = null) {
+    const overlay = document.getElementById('modalOverlay');
+    const title = document.getElementById('modalTitle');
+    const form = document.getElementById('noteForm');
+
+    if (note) {
+      title.textContent = '✏️ ویرایش یادداشت';
+      document.getElementById('noteId').value = note.id;
+      document.getElementById('noteTitle').value = note.title;
+      document.getElementById('noteContent').value = note.content;
+      document.getElementById('noteCategory').value = note.category;
+    } else {
+      title.textContent = '✏️ یادداشت جدید';
+      form.reset();
+      document.getElementById('noteId').value = '';
+    }
+
+    overlay.classList.add('active');
+    setTimeout(() => document.getElementById('noteTitle').focus(), 300);
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  }
+
+  // بستن با کلیک بیرون
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'modalOverlay') closeModal();
+  });
+
+  // بستن با Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // === ذخیره یادداشت ===
+  function saveNote(e) {
+    e.preventDefault();
+    const id = document.getElementById('noteId').value;
+    const title = document.getElementById('noteTitle').value.trim();
+    const content = document.getElementById('noteContent').value.trim();
+    const category = document.getElementById('noteCategory').value;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fa-IR', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    if (id) {
+      // ویرایش
+      const idx = notes.findIndex(n => n.id == id);
+      if (idx > -1) {
+        notes[idx] = { ...notes[idx], title, content, category, date: dateStr };
+      }
+    } else {
+      // جدید
+      notes.unshift({
+        id: Date.now(),
+        title,
+        content,
+        category,
+        date: dateStr
+      });
+    }
+
+    saveToStorage();
+    renderNotes();
+    closeModal();
+  }
+
+  // === ویرایش ===
+  function editNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (note) openModal(note);
+  }
+
+  // === حذف ===
+  function deleteNote(id) {
+    const noteEl = document.querySelector(`.note[data-id="${id}"]`);
+    if (noteEl) noteEl.classList.add('removing');
+
+    setTimeout(() => {
+      notes = notes.filter(n => n.id !== id);
+      saveToStorage();
+      renderNotes();
+    }, 280);
+  }
+
+  // === راه‌اندازی ===
+  renderFilters();
+  renderNotes();
+</script>
+
+</body>
+</html>
