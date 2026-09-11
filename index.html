@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>✏️ دفترچه یادداشت من</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffd60a">
 <link rel="apple-touch-icon" href="android-chrome-192x192.png">
@@ -47,7 +47,6 @@
   <div class="bg-glow two"></div>
   <div class="floating-pencils" id="floatingPencils"></div>
 
-  <!-- هدر -->
   <header>
     <h1>
       <span class="pencil">✏️</span>
@@ -70,21 +69,17 @@
     </div>
   </header>
 
-  <!-- پیام خوش‌آمدگویی -->
   <div class="welcome-bar" id="welcomeBar">
     <img class="welcome-avatar" id="welcomeAvatar" src="" alt="">
     <span>سلام <strong id="welcomeName"></strong>! خوش اومدی 👋</span>
   </div>
 
-  <!-- جستجو -->
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
   </div>
 
-  <!-- فیلترها -->
   <div class="filters" id="filters"></div>
 
-  <!-- کانتینر یادداشت‌ها -->
   <div class="notes-container" id="notesContainer"></div>
 
   <!-- منوی کشویی راست -->
@@ -328,6 +323,6 @@
     });
   }
 </script>
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
