@@ -13,132 +13,318 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="یادداشت">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-<div class="bg-glow"></div>
-<div class="bg-glow two"></div>
-<div class="floating-pencils" id="floatingPencils"></div>
-
-<header>
-  <h1>
-    <span class="pencil">✏️</span>
-    دفترچه <span class="yellow">یادداشت</span>
-  </h1>
-  <div class="header-actions">
-    <button class="icon-header-btn" onclick="openExportModal()" title="دانلود بکاپ">⬇️</button>
-    <button class="icon-header-btn" onclick="document.getElementById('importFile').click()" title="بارگذاری بکاپ">⬆️</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importNotes(event)">
-    <button class="add-btn" onclick="openModal()">
-      <span>➕</span> یادداشت جدید
-    </button>
+<!-- صفحه‌ی ورود -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo">✏️</div>
+    <h1 class="auth-title">دفترچه یادداشت</h1>
+    <p class="auth-subtitle">برای شروع، با حساب گوگل وارد شو</p>
+    <div id="g_id_onload"
+         data-client_id="150383359779-70gbem0j167kljr12fqlh52ege41edms.apps.googleusercontent.com"
+         data-callback="handleGoogleLogin"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="filled_black"
+         data-text="signin_with"
+         data-shape="pill"
+         data-logo_alignment="left">
+    </div>
+    <p class="auth-note">با ورود، قوانین استفاده را می‌پذیرید</p>
   </div>
-</header>
-
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
 </div>
 
-<div class="filters" id="filters"></div>
+<!-- محتوای اصلی -->
+<div id="mainApp" style="display: none;">
 
-<div class="notes-container" id="notesContainer"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-glow two"></div>
+  <div class="floating-pencils" id="floatingPencils"></div>
 
-<!-- مودال افزودن/ویرایش -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalTitle">✏️ یادداشت جدید</h2>
-      <div class="modal-header-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">انصراف</button>
-        <button type="submit" form="noteForm" class="btn btn-primary">💾 ذخیره</button>
+  <!-- هدر -->
+  <header>
+    <h1>
+      <span class="pencil">✏️</span>
+      دفترچه <span class="yellow">یادداشت</span>
+    </h1>
+    <div class="header-actions">
+      <button class="icon-header-btn" onclick="openExportModal()" title="دانلود بکاپ">⬇️</button>
+      <button class="icon-header-btn" onclick="document.getElementById('importFile').click()" title="بارگذاری بکاپ">⬆️</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importNotes(event)">
+      <button class="add-btn" onclick="openModal()">
+        <span>➕</span> یادداشت جدید
+      </button>
+      <button class="menu-toggle" onclick="toggleMenu()" title="منو">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- پیام خوش‌آمدگویی -->
+  <div class="welcome-bar" id="welcomeBar">
+    <img class="welcome-avatar" id="welcomeAvatar" src="" alt="">
+    <span>سلام <strong id="welcomeName"></strong>! خوش اومدی 👋</span>
+  </div>
+
+  <!-- جستجو -->
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
+  </div>
+
+  <!-- فیلترها -->
+  <div class="filters" id="filters"></div>
+
+  <!-- کانتینر یادداشت‌ها -->
+  <div class="notes-container" id="notesContainer"></div>
+
+  <!-- منوی کشویی راست -->
+  <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeMenu()"></div>
+  <aside class="side-menu" id="sideMenu">
+    <div class="side-menu-header">
+      <img class="side-menu-avatar" id="menuAvatar" src="" alt="">
+      <div class="side-menu-info">
+        <div class="side-menu-name" id="menuName"></div>
+        <div class="side-menu-email" id="menuEmail"></div>
+      </div>
+      <button class="side-menu-close" onclick="closeMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="side-menu-section">
+      <div class="side-menu-label">🎨 رنگ منو</div>
+      <div class="color-picker" id="colorPicker">
+        <button class="color-dot" data-color="indigo" style="background:#3f3d8b;" title="نیلی"></button>
+        <button class="color-dot active" data-color="yellow" style="background:#ffd60a;" title="زرد"></button>
+        <button class="color-dot" data-color="blue" style="background:#2563eb;" title="آبی"></button>
+        <button class="color-dot" data-color="black" style="background:#1a1a1a;" title="مشکی"></button>
+        <button class="color-dot" data-color="green" style="background:#10b981;" title="سبز"></button>
+        <button class="color-dot" data-color="pink" style="background:#ec4899;" title="صورتی"></button>
       </div>
     </div>
-    <form id="noteForm" onsubmit="saveNote(event)">
-      <input type="hidden" id="noteId">
-      <div class="form-group">
-        <label>عنوان</label>
-        <input type="text" id="noteTitle" placeholder="عنوان یادداشت..." required>
-      </div>
-      <div class="form-group">
-        <label>متن یادداشت</label>
-        <textarea id="noteContent" placeholder="چیزی مهم رو بنویس..." required></textarea>
-      </div>
-      <div class="form-group">
-        <label>دسته‌بندی</label>
-        <select id="noteCategory">
-          <option value="مهم">⭐ مهم</option>
-          <option value="آموزش">📚 آموزش</option>
-          <option value="کار">💼 کار</option>
-          <option value="شخصی">🏠 شخصی</option>
-          <option value="ایده">💡 ایده</option>
-        </select>
-      </div>
-    </form>
-  </div>
-</div>
 
-<!-- مودال تایید حذف -->
-<div class="modal-overlay" id="deleteModal">
-  <div class="modal danger">
-    <h2>🗑️ حذف یادداشت</h2>
-    <p>آیا مطمئنی می‌خوای این یادداشت رو حذف کنی؟</p>
-    <div class="highlight-box" id="deleteNoteTitle"></div>
-    <p style="font-size: 0.85rem; opacity: 0.7;">⚠️ این عمل قابل بازگشت نیست!</p>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">انصراف</button>
-      <button type="button" class="btn btn-danger" onclick="confirmDelete()">بله، حذف کن</button>
+    <div class="side-menu-section">
+      <div class="side-menu-label">📖 راهنما</div>
+      <button class="side-menu-item" onclick="showGuide()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        <span>آموزش استفاده</span>
+      </button>
     </div>
-  </div>
-</div>
 
-<!-- مودال Export -->
-<div class="modal-overlay" id="exportModal">
-  <div class="modal">
-    <h2>⬇️ دانلود بکاپ</h2>
-    <p>می‌خوای از همه‌ی یادداشت‌هات یه فایل پشتیبان (JSON) بگیری؟</p>
-    <div class="highlight-box">📊 تعداد یادداشت‌ها: <span id="exportCount">0</span></div>
-    <p style="font-size: 0.85rem; opacity: 0.7;">💾 این فایل روی کامپیوترت ذخیره می‌شه.</p>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeExportModal()">انصراف</button>
-      <button type="button" class="btn btn-primary" onclick="confirmExport()">✅ دانلود کن</button>
+    <div class="side-menu-section">
+      <div class="side-menu-label">📞 ارتباط با ما</div>
+      <a class="side-menu-item" href="tel:09306300626">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>۰۹۳۰۶۳۰۰۶۲۶</span>
+      </a>
+      <a class="side-menu-item" href="https://t.me/Parsaeshi" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13"/>
+          <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+        <span>تلگرام: Parsaeshi</span>
+      </a>
+      <a class="side-menu-item" href="https://instagram.com/Parsa.eshi" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+        <span>اینستاگرام: Parsa.eshi</span>
+      </a>
+      <a class="side-menu-item" href="https://Parsaeshi.ir" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span>سایت: Parsaeshi.ir</span>
+      </a>
     </div>
-  </div>
-</div>
 
-<!-- مودال Import -->
-<div class="modal-overlay" id="importModal">
-  <div class="modal">
-    <h2>⬆️ بارگذاری بکاپ</h2>
-    <p><strong id="importCount">0</strong> یادداشت توی فایل پیدا شد. چطور اضافه بشن؟</p>
-    <div class="import-options">
-      <label class="import-option">
-        <input type="radio" name="importMode" value="merge" checked>
-        <div>
-          <label>➕ افزودن به موجود</label>
-          <small>یادداشت‌های فعلیت پاک نمی‌شن</small>
+    <div class="side-menu-section">
+      <button class="side-menu-item danger" onclick="logout()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>خروج از حساب</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- مودال افزودن/ویرایش -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">✏️ یادداشت جدید</h2>
+        <div class="modal-header-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">انصراف</button>
+          <button type="submit" form="noteForm" class="btn btn-primary">💾 ذخیره</button>
         </div>
-      </label>
-      <label class="import-option">
-        <input type="radio" name="importMode" value="replace">
-        <div>
-          <label>🔄 جایگزینی کامل</label>
-          <small>همه یادداشت‌ها پاک می‌شن و فایل بارگذاری می‌شه</small>
+      </div>
+      <form id="noteForm" onsubmit="saveNote(event)">
+        <input type="hidden" id="noteId">
+        <div class="form-group">
+          <label>عنوان</label>
+          <input type="text" id="noteTitle" placeholder="عنوان یادداشت..." required>
         </div>
-      </label>
-    </div>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-secondary" onclick="closeImportModal()">انصراف</button>
-      <button type="button" class="btn btn-primary" onclick="confirmImport()">✅ تایید</button>
+        <div class="form-group">
+          <label>متن یادداشت</label>
+          <textarea id="noteContent" placeholder="چیزی مهم رو بنویس..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>دسته‌بندی</label>
+          <select id="noteCategory">
+            <option value="مهم">⭐ مهم</option>
+            <option value="آموزش">📚 آموزش</option>
+            <option value="کار">💼 کار</option>
+            <option value="شخصی">🏠 شخصی</option>
+            <option value="ایده">💡 ایده</option>
+          </select>
+        </div>
+      </form>
     </div>
   </div>
+
+  <!-- مودال تایید حذف -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal danger">
+      <h2>🗑️ حذف یادداشت</h2>
+      <p>آیا مطمئنی می‌خوای این یادداشت رو حذف کنی؟</p>
+      <div class="highlight-box" id="deleteNoteTitle"></div>
+      <p style="font-size: 0.85rem; opacity: 0.7;">⚠️ این عمل قابل بازگشت نیست!</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">انصراف</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDelete()">بله، حذف کن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال Export -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal">
+      <h2>⬇️ دانلود بکاپ</h2>
+      <p>می‌خوای از همه‌ی یادداشت‌هات یه فایل پشتیبان (JSON) بگیری؟</p>
+      <div class="highlight-box">📊 تعداد یادداشت‌ها: <span id="exportCount">0</span></div>
+      <p style="font-size: 0.85rem; opacity: 0.7;">💾 این فایل روی کامپیوترت ذخیره می‌شه.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeExportModal()">انصراف</button>
+        <button type="button" class="btn btn-primary" onclick="confirmExport()">✅ دانلود کن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال Import -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal">
+      <h2>⬆️ بارگذاری بکاپ</h2>
+      <p><strong id="importCount">0</strong> یادداشت توی فایل پیدا شد. چطور اضافه بشن؟</p>
+      <div class="import-options">
+        <label class="import-option">
+          <input type="radio" name="importMode" value="merge" checked>
+          <div>
+            <label>➕ افزودن به موجود</label>
+            <small>یادداشت‌های فعلیت پاک نمی‌شن</small>
+          </div>
+        </label>
+        <label class="import-option">
+          <input type="radio" name="importMode" value="replace">
+          <div>
+            <label>🔄 جایگزینی کامل</label>
+            <small>همه یادداشت‌ها پاک می‌شن و فایل بارگذاری می‌شه</small>
+          </div>
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeImportModal()">انصراف</button>
+        <button type="button" class="btn btn-primary" onclick="confirmImport()">✅ تایید</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال راهنما -->
+  <div class="modal-overlay" id="guideModal">
+    <div class="modal">
+      <h2>📖 راهنمای استفاده</h2>
+      <div class="guide-content">
+        <div class="guide-item">
+          <div class="guide-icon">➕</div>
+          <div>
+            <strong>یادداشت جدید</strong>
+            <p>برای ساختن یادداشت جدید، روی دکمه‌ی زرد بالای صفحه بزن.</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">🔍</div>
+          <div>
+            <strong>جستجو</strong>
+            <p>می‌تونی توی عنوان و متن یادداشت‌ها جستجو کنی.</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">🏷️</div>
+          <div>
+            <strong>دسته‌بندی</strong>
+            <p>یادداشت‌هات رو توی دسته‌های مهم، آموزش، کار، شخصی و ایده بذار.</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">🎨</div>
+          <div>
+            <strong>رنگ منو</strong>
+            <p>از منوی راست می‌تونی رنگ دلخواهت رو انتخاب کنی.</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">💾</div>
+          <div>
+            <strong>بکاپ</strong>
+            <p>از دکمه‌های ⬇️ و ⬆️ بالای صفحه می‌تونی از یادداشت‌هات بکاپ بگیری یا بارگذاری کنی.</p>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">📞</div>
+          <div>
+            <strong>ارتباط با ما</strong>
+            <p>از منوی راست می‌تونی با ما تماس بگیری یا توی شبکه‌های اجتماعی دنبال کنی.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="closeGuide()">فهمیدم! 👍</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      navigator.serviceWorker.register('./sw.js')
-        .then(function(reg) { console.log('✅ Service Worker فعال شد:', reg.scope); })
-        .catch(function(err) { console.log('❌ خطا:', err); });
+      navigator.serviceWorker.register('./sw.js').catch(function(err) {
+        console.log('SW error:', err);
+      });
     });
   }
 </script>
