@@ -64,7 +64,7 @@ function logout() {
   authToken = null;
   currentUser = null;
   notes = [];
-  if (window.google && google.accounts) {
+  if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.disableAutoSelect();
   }
   location.reload();
@@ -193,7 +193,7 @@ function applyMenuColor(color) {
 }
 
 document.addEventListener('click', function(e) {
-  if (e.target.classList.contains('color-dot')) {
+  if (e.target.classList && e.target.classList.contains('color-dot')) {
     const color = e.target.dataset.color;
     document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('active'); });
     e.target.classList.add('active');
@@ -211,8 +211,10 @@ function toggleMenu() {
   overlay.classList.toggle('open');
 }
 function closeMenu() {
-  document.getElementById('sideMenu').classList.remove('open');
-  document.getElementById('sideMenuOverlay').classList.remove('open');
+  const menu = document.getElementById('sideMenu');
+  const overlay = document.getElementById('sideMenuOverlay');
+  if (menu) menu.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
 }
 
 // ====== راهنما ======
@@ -227,6 +229,7 @@ function closeGuide() {
 // ====== فیلترها ======
 function renderFilters() {
   const container = document.getElementById('filters');
+  if (!container) return;
   container.innerHTML = categories.map(function(cat) {
     return '<button class="filter-btn ' + (currentFilter === cat ? 'active' : '') + '" onclick="setFilter(\'' + cat + '\')">' + cat + '</button>';
   }).join('');
@@ -240,7 +243,9 @@ function setFilter(cat) {
 // ====== رندر یادداشت‌ها ======
 function renderNotes() {
   const container = document.getElementById('notesContainer');
-  const search = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!container) return;
+  const searchEl = document.getElementById('searchInput');
+  const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
 
   const filtered = notes.filter(function(n) {
     const matchCat = currentFilter === 'همه' || n.category === currentFilter;
@@ -494,7 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// بستن مودال با Escape
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     closeModal();
@@ -506,7 +510,6 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// بستن مودال با کلیک بیرون
 document.addEventListener('click', function(e) {
   if (e.target.classList && e.target.classList.contains('modal-overlay')) {
     e.target.classList.remove('active');
