@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>✏️ دفترچه یادداشت من</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -10,6 +10,7 @@
 <meta name="theme-color" content="#ffd60a">
 <link rel="apple-touch-icon" href="android-chrome-192x192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="یادداشت">
 </head>
@@ -42,9 +43,16 @@
 
 <div class="notes-container" id="notesContainer"></div>
 
+<!-- مودال افزودن/ویرایش -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h2 id="modalTitle">✏️ یادداشت جدید</h2>
+    <div class="modal-header">
+      <h2 id="modalTitle">✏️ یادداشت جدید</h2>
+      <div class="modal-header-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">انصراف</button>
+        <button type="submit" form="noteForm" class="btn btn-primary">💾 ذخیره</button>
+      </div>
+    </div>
     <form id="noteForm" onsubmit="saveNote(event)">
       <input type="hidden" id="noteId">
       <div class="form-group">
@@ -65,14 +73,11 @@
           <option value="ایده">💡 ایده</option>
         </select>
       </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">انصراف</button>
-        <button type="submit" class="btn btn-primary">💾 ذخیره</button>
-      </div>
     </form>
   </div>
 </div>
 
+<!-- مودال تایید حذف -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal danger">
     <h2>🗑️ حذف یادداشت</h2>
@@ -86,6 +91,7 @@
   </div>
 </div>
 
+<!-- مودال Export -->
 <div class="modal-overlay" id="exportModal">
   <div class="modal">
     <h2>⬇️ دانلود بکاپ</h2>
@@ -99,6 +105,7 @@
   </div>
 </div>
 
+<!-- مودال Import -->
 <div class="modal-overlay" id="importModal">
   <div class="modal">
     <h2>⬆️ بارگذاری بکاپ</h2>
