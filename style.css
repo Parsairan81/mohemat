@@ -128,7 +128,6 @@ header h1 span.yellow { color: var(--yellow); }
 }
 .side-menu.open { transform: translateX(0); }
 
-/* رنگ‌های منو */
 .side-menu.color-yellow { background: linear-gradient(180deg, #1a1a1a 0%, #2b2b2b 100%); }
 .side-menu.color-yellow .side-menu-label { color: #ffd60a; }
 .side-menu.color-indigo { background: linear-gradient(180deg, #1e1b4b 0%, #312e81 100%); }
@@ -175,7 +174,6 @@ header h1 span.yellow { color: var(--yellow); }
 .side-menu-item.danger:hover { background: rgba(230,57,70,0.5); }
 .side-menu-item svg { flex-shrink: 0; }
 
-/* ====== انتخاب رنگ ====== */
 .color-picker { display: flex; gap: 0.7rem; flex-wrap: wrap; }
 .color-dot {
   width: 38px; height: 38px; border-radius: 50%; border: 3px solid transparent;
@@ -185,12 +183,8 @@ header h1 span.yellow { color: var(--yellow); }
 .color-dot:hover { transform: scale(1.15); }
 .color-dot.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.5); }
 
-/* ====== راهنما ====== */
 .guide-content { max-height: 60vh; overflow-y: auto; }
-.guide-item {
-  display: flex; gap: 0.9rem; padding: 0.8rem 0;
-  border-bottom: 1px dashed #e0e0e0;
-}
+.guide-item { display: flex; gap: 0.9rem; padding: 0.8rem 0; border-bottom: 1px dashed #e0e0e0; }
 .guide-item:last-child { border-bottom: none; }
 .guide-icon {
   font-size: 1.5rem; width: 44px; height: 44px;
@@ -200,7 +194,7 @@ header h1 span.yellow { color: var(--yellow); }
 .guide-item strong { display: block; margin-bottom: 0.2rem; font-size: 0.95rem; }
 .guide-item p { font-size: 0.85rem; opacity: 0.8; line-height: 1.5; margin: 0 !important; }
 
-/* ====== بقیه استایل‌ها (جستجو، فیلتر، کارت، مودال...) ====== */
+/* ====== جستجو ====== */
 .search-box { display: flex; justify-content: center; padding: 1.2rem 1.5rem 0; }
 .search-box input {
   width: 100%; max-width: 500px; padding: 0.75rem 1.2rem;
@@ -210,6 +204,7 @@ header h1 span.yellow { color: var(--yellow); }
 }
 .search-box input:focus { border-color: var(--yellow-dark); box-shadow: 0 0 0 4px rgba(255,214,10,0.3); }
 
+/* ====== فیلترها ====== */
 .filters { display: flex; flex-wrap: nowrap; gap: 0.5rem; padding: 1rem 1.5rem 0.5rem; overflow-x: auto; justify-content: flex-start; scrollbar-width: none; }
 .filters::-webkit-scrollbar { display: none; }
 .filter-btn {
@@ -221,11 +216,13 @@ header h1 span.yellow { color: var(--yellow); }
 .filter-btn:hover { background: var(--yellow); }
 .filter-btn.active { background: var(--black); color: var(--yellow); }
 
+/* ====== کانتینر یادداشت‌ها ====== */
 .notes-container {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem; padding: 1.5rem 2rem; max-width: 1300px; margin: 0 auto; align-items: start;
 }
 
+/* ====== کارت یادداشت ====== */
 .note {
   background: var(--yellow); border-radius: 12px; padding: 1rem;
   position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -259,10 +256,12 @@ header h1 span.yellow { color: var(--yellow); }
 }
 .icon-btn:hover { background: var(--black); color: var(--yellow); transform: scale(1.12); }
 
+/* ====== حالت خالی ====== */
 .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--black-soft); }
 .empty-state .emoji { font-size: 3.5rem; display: block; margin-bottom: 1rem; animation: wiggle 2s ease-in-out infinite; }
 .empty-state p { font-size: 1rem; opacity: 0.7; }
 
+/* ====== مودال ====== */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
@@ -305,10 +304,12 @@ header h1 span.yellow { color: var(--yellow); }
 .btn { padding: 0.65rem 1.3rem; border-radius: 50px; border: none; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: all 0.3s ease; font-family: inherit; }
 .btn-primary { background: var(--yellow); color: var(--black); box-shadow: 0 3px 0 var(--yellow-dark); }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 0 var(--yellow-dark); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--yellow-dark); }
 .btn-secondary { background: var(--gray); color: var(--black); }
 .btn-secondary:hover { background: #e0e0e0; }
 .btn-danger { background: var(--red); color: var(--white); box-shadow: 0 3px 0 #a52832; }
 .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #a52832; }
+.btn-danger:active { transform: translateY(2px); box-shadow: 0 1px 0 #a52832; }
 
 .import-options { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.8rem 0; }
 .import-option { display: flex; align-items: center; gap: 0.7rem; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 10px; cursor: pointer; transition: all 0.25s ease; }
@@ -362,7 +363,9 @@ header h1 span.yellow { color: var(--yellow); }
   .modal-header { flex-direction: column-reverse; align-items: stretch; gap: 0.6rem; }
   .modal-header h2 { font-size: 1rem; text-align: center; width: 100%; }
   .modal-header-actions { width: 100%; justify-content: space-between; }
-  .modal-header-actions .btn { flex: 1; padding: 0.55rem 0.7rem; font-size: 0.8rem; }
+  .modal-header-actions .btn { flex: 1; padding: 0.55rem 0.7rem; font-size: 0.8rem; text-align: center; justify-content: center; }
+
+  .form-group textarea { min-height: 80px; max-height: 150px; }
 
   .auth-box { padding: 2rem 1.5rem; }
   .auth-logo { font-size: 3rem; }
