@@ -1,5 +1,5 @@
 // ================================================================
-//  app.js - دفترچه یادداشت با Google OAuth
+//  app.js - دفترچه یادداشت با Google OAuth + تم داینامیک
 // ================================================================
 
 const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
@@ -13,7 +13,37 @@ let pendingDeleteId = null;
 let pendingImportData = null;
 const categories = ['همه', 'مهم', 'آموزش', 'کار', 'شخصی', 'ایده'];
 
-// ====== Google Login Callback ======
+// ================================================================
+// تم‌های رنگی سایت
+// ================================================================
+const THEMES = {
+  yellow:  { primary: '#ffd60a', dark: '#ffc300', text: '#1a1a1a', bg1: '#fffdf5', bg2: '#ffffff', bg3: '#fffbe8' },
+  indigo:  { primary: '#818cf8', dark: '#6366f1', text: '#1a1a1a', bg1: '#f5f3ff', bg2: '#ffffff', bg3: '#ede9fe' },
+  blue:    { primary: '#60a5fa', dark: '#3b82f6', text: '#1a1a1a', bg1: '#f0f9ff', bg2: '#ffffff', bg3: '#e0f2fe' },
+  green:   { primary: '#34d399', dark: '#10b981', text: '#1a1a1a', bg1: '#f0fdf4', bg2: '#ffffff', bg3: '#dcfce7' },
+  pink:    { primary: '#f472b6', dark: '#ec4899', text: '#1a1a1a', bg1: '#fdf2f8', bg2: '#ffffff', bg3: '#fce7f3' },
+  purple:  { primary: '#c084fc', dark: '#a855f7', text: '#1a1a1a', bg1: '#faf5ff', bg2: '#ffffff', bg3: '#f3e8ff' },
+  orange:  { primary: '#fb923c', dark: '#f97316', text: '#1a1a1a', bg1: '#fff7ed', bg2: '#ffffff', bg3: '#ffedd5' },
+  dark:    { primary: '#ffd60a', dark: '#ffc300', text: '#ffffff', bg1: '#0f0f0f', bg2: '#1a1a1a', bg3: '#2b2b2b' }
+};
+
+function applyTheme(themeName) {
+  const theme = THEMES[themeName] || THEMES.yellow;
+  const root = document.documentElement;
+  root.style.setProperty('--yellow', theme.primary);
+  root.style.setProperty('--yellow-dark', theme.dark);
+  root.style.setProperty('--bg1', theme.bg1);
+  root.style.setProperty('--bg2', theme.bg2);
+  root.style.setProperty('--bg3', theme.bg3);
+
+  if (themeName === 'dark') {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
+}
+
+// ====== Google Login ======
 function handleGoogleLogin(response) {
   if (!response.credential) return;
   authToken = response.credential;
@@ -41,17 +71,44 @@ function handleGoogleLogin(response) {
   });
 }
 
-// ====== نمایش اپ اصلی ======
+// ====== نمایش اپ ======
 function showMainApp() {
   document.getElementById('authOverlay').style.display = 'none';
   document.getElementById('mainApp').style.display = 'block';
 
   if (currentUser) {
-    document.getElementById('welcomeName').textContent = currentUser.name.split(' ')[0];
-    document.getElementById('welcomeAvatar').src = currentUser.picture || '';
-    document.getElementById('menuAvatar').src = currentUser.picture || '';
+    var firstName = currentUser.name.split(' ')[0];
+    document.getElementById('welcomeName').textContent = firstName;
     document.getElementById('menuName').textContent = currentUser.name;
     document.getElementById('menuEmail').textContent = currentUser.email;
+
+    // عکس با fallback
+    var pic = currentUser.picture || '';
+    var wAvatar = document.getElementById('welcomeAvatar');
+    var mAvatar = document.getElementById('menuAvatar');
+    if (pic) {
+      wAvatar.src = pic;
+      mAvatar.src = pic;
+      wAvatar.onerror = function() { this.style.display = 'none'; };
+      mAvatar.onerror = function() { this.style.display = 'none'; };
+    } else {
+      wAvatar.style.display = 'none';
+      mAvatar.style.display = 'none';
+    }
+
+    // پیام خوش‌آمد بعد ۵ ثانیه محو می‌شه
+    setTimeout(function() {
+      var wb = document.getElementById('welcomeBar');
+      if (wb) {
+        wb.style.transition = 'opacity 0.6s ease, transform 0.6s ease, max-height 0.6s ease, margin 0.6s ease, padding 0.6s ease';
+        wb.style.opacity = '0';
+        wb.style.transform = 'translateY(-20px)';
+        wb.style.maxHeight = '0';
+        wb.style.margin = '0';
+        wb.style.padding = '0';
+        setTimeout(function() { wb.style.display = 'none'; }, 700);
+      }
+    }, 5000);
   }
 
   initPencils();
@@ -72,8 +129,8 @@ function logout() {
 
 // ====== بررسی ورود قبلی ======
 function checkExistingLogin() {
-  const savedToken = localStorage.getItem('authToken');
-  const savedUser = localStorage.getItem('currentUser');
+  var savedToken = localStorage.getItem('authToken');
+  var savedUser = localStorage.getItem('currentUser');
 
   if (savedToken && savedUser) {
     authToken = savedToken;
@@ -99,15 +156,15 @@ function checkExistingLogin() {
 }
 
 // ====== مدادهای شناور ======
-let pencilsInitialized = false;
+var pencilsInitialized = false;
 function initPencils() {
   if (pencilsInitialized) return;
   pencilsInitialized = true;
-  const container = document.getElementById('floatingPencils');
+  var container = document.getElementById('floatingPencils');
   if (!container) return;
-  const emojis = ['✏️', '📝', '🖊️', '📌', '⭐'];
-  for (let i = 0; i < 12; i++) {
-    const span = document.createElement('span');
+  var emojis = ['✏️', '📝', '🖊️', '📌', '⭐'];
+  for (var i = 0; i < 12; i++) {
+    var span = document.createElement('span');
     span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
     span.style.left = Math.random() * 100 + '%';
     span.style.animationDelay = Math.random() * 15 + 's';
@@ -119,7 +176,7 @@ function initPencils() {
 
 // ====== توابع کمکی ======
 function showToast(msg, isError) {
-  const toast = document.createElement('div');
+  var toast = document.createElement('div');
   toast.className = 'toast' + (isError ? ' error' : '');
   toast.textContent = msg;
   document.body.appendChild(toast);
@@ -131,7 +188,7 @@ function showToast(msg, isError) {
 }
 
 function escapeHtml(text) {
-  const div = document.createElement('div');
+  var div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
 }
@@ -149,7 +206,7 @@ function authFetch(url, options) {
 // ====== بارگذاری یادداشت‌ها ======
 async function loadNotes() {
   try {
-    const res = await authFetch(API_URL + '/notes');
+    var res = await authFetch(API_URL + '/notes');
     if (!res.ok) throw new Error('خطا در اتصال');
     notes = await res.json();
     renderNotes();
@@ -159,22 +216,21 @@ async function loadNotes() {
   }
 }
 
-// ====== بارگذاری تنظیمات ======
+// ====== تنظیمات ======
 async function loadSettings() {
   try {
-    const res = await authFetch(API_URL + '/settings');
+    var res = await authFetch(API_URL + '/settings');
     if (!res.ok) return;
-    const settings = await res.json();
-    if (settings.menuColor) {
-      applyMenuColor(settings.menuColor);
+    var settings = await res.json();
+    if (settings.theme) {
+      applyTheme(settings.theme);
       document.querySelectorAll('.color-dot').forEach(function(dot) {
-        dot.classList.toggle('active', dot.dataset.color === settings.menuColor);
+        dot.classList.toggle('active', dot.dataset.color === settings.theme);
       });
     }
   } catch (err) { console.log('settings error:', err); }
 }
 
-// ====== ذخیره تنظیمات ======
 async function saveSettings(settings) {
   try {
     await authFetch(API_URL + '/settings', {
@@ -184,40 +240,30 @@ async function saveSettings(settings) {
   } catch (err) { console.log('save settings error:', err); }
 }
 
-// ====== تغییر رنگ منو ======
-function applyMenuColor(color) {
-  const menu = document.getElementById('sideMenu');
-  if (!menu) return;
-  menu.classList.remove('color-yellow', 'color-indigo', 'color-blue', 'color-black', 'color-green', 'color-pink');
-  menu.classList.add('color-' + color);
-}
-
+// ====== کلیک روی رنگ ======
 document.addEventListener('click', function(e) {
   if (e.target.classList && e.target.classList.contains('color-dot')) {
-    const color = e.target.dataset.color;
+    var color = e.target.dataset.color;
     document.querySelectorAll('.color-dot').forEach(function(d) { d.classList.remove('active'); });
     e.target.classList.add('active');
-    applyMenuColor(color);
-    saveSettings({ menuColor: color });
-    showToast('🎨 رنگ منو تغییر کرد');
+    applyTheme(color);
+    saveSettings({ theme: color });
+    showToast('🎨 تم سایت تغییر کرد');
   }
 });
 
 // ====== منو ======
 function toggleMenu() {
-  const menu = document.getElementById('sideMenu');
-  const overlay = document.getElementById('sideMenuOverlay');
-  menu.classList.toggle('open');
-  overlay.classList.toggle('open');
+  document.getElementById('sideMenu').classList.toggle('open');
+  document.getElementById('sideMenuOverlay').classList.toggle('open');
 }
 function closeMenu() {
-  const menu = document.getElementById('sideMenu');
-  const overlay = document.getElementById('sideMenuOverlay');
+  var menu = document.getElementById('sideMenu');
+  var overlay = document.getElementById('sideMenuOverlay');
   if (menu) menu.classList.remove('open');
   if (overlay) overlay.classList.remove('open');
 }
 
-// ====== راهنما ======
 function showGuide() {
   document.getElementById('guideModal').classList.add('active');
   closeMenu();
@@ -228,7 +274,7 @@ function closeGuide() {
 
 // ====== فیلترها ======
 function renderFilters() {
-  const container = document.getElementById('filters');
+  var container = document.getElementById('filters');
   if (!container) return;
   container.innerHTML = categories.map(function(cat) {
     return '<button class="filter-btn ' + (currentFilter === cat ? 'active' : '') + '" onclick="setFilter(\'' + cat + '\')">' + cat + '</button>';
@@ -242,14 +288,14 @@ function setFilter(cat) {
 
 // ====== رندر یادداشت‌ها ======
 function renderNotes() {
-  const container = document.getElementById('notesContainer');
+  var container = document.getElementById('notesContainer');
   if (!container) return;
-  const searchEl = document.getElementById('searchInput');
-  const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
+  var searchEl = document.getElementById('searchInput');
+  var search = searchEl ? searchEl.value.trim().toLowerCase() : '';
 
-  const filtered = notes.filter(function(n) {
-    const matchCat = currentFilter === 'همه' || n.category === currentFilter;
-    const matchSearch = !search ||
+  var filtered = notes.filter(function(n) {
+    var matchCat = currentFilter === 'همه' || n.category === currentFilter;
+    var matchSearch = !search ||
       n.title.toLowerCase().indexOf(search) !== -1 ||
       n.content.toLowerCase().indexOf(search) !== -1;
     return matchCat && matchSearch;
@@ -283,9 +329,9 @@ function renderNotes() {
 
 // ====== مودال ======
 function openModal(note) {
-  const overlay = document.getElementById('modalOverlay');
-  const title = document.getElementById('modalTitle');
-  const form = document.getElementById('noteForm');
+  var overlay = document.getElementById('modalOverlay');
+  var title = document.getElementById('modalTitle');
+  var form = document.getElementById('noteForm');
 
   if (note) {
     title.textContent = '✏️ ویرایش یادداشت';
@@ -305,32 +351,28 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
 }
 
-// ====== ذخیره یادداشت ======
+// ====== ذخیره ======
 async function saveNote(e) {
   e.preventDefault();
-  const id = document.getElementById('noteId').value;
-  const title = document.getElementById('noteTitle').value.trim();
-  const content = document.getElementById('noteContent').value.trim();
-  const category = document.getElementById('noteCategory').value;
+  var id = document.getElementById('noteId').value;
+  var title = document.getElementById('noteTitle').value.trim();
+  var content = document.getElementById('noteContent').value.trim();
+  var category = document.getElementById('noteCategory').value;
 
-  const dateStr = new Date().toLocaleDateString('fa-IR', {
+  var dateStr = new Date().toLocaleDateString('fa-IR', {
     year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  const noteData = {
+  var noteData = {
     id: id || Date.now().toString(),
     title: title, content: content, category: category, date: dateStr
   };
 
   try {
     if (id) {
-      await authFetch(API_URL + '/notes/' + id, {
-        method: 'PUT', body: JSON.stringify(noteData)
-      });
+      await authFetch(API_URL + '/notes/' + id, { method: 'PUT', body: JSON.stringify(noteData) });
     } else {
-      await authFetch(API_URL + '/notes', {
-        method: 'POST', body: JSON.stringify(noteData)
-      });
+      await authFetch(API_URL + '/notes', { method: 'POST', body: JSON.stringify(noteData) });
     }
     await loadNotes();
     closeModal();
@@ -341,14 +383,14 @@ async function saveNote(e) {
 }
 
 function editNote(id) {
-  const note = notes.find(function(n) { return n.id == id; });
+  var note = notes.find(function(n) { return n.id == id; });
   if (note) openModal(note);
 }
 
 // ====== حذف ======
 function askDeleteNote(id) {
   pendingDeleteId = id;
-  const note = notes.find(function(n) { return n.id == id; });
+  var note = notes.find(function(n) { return n.id == id; });
   if (!note) return;
   document.getElementById('deleteNoteTitle').textContent = '« ' + note.title + ' »';
   document.getElementById('deleteModal').classList.add('active');
@@ -359,8 +401,8 @@ function closeDeleteModal() {
 }
 async function confirmDelete() {
   if (!pendingDeleteId) return;
-  const id = pendingDeleteId;
-  const noteEl = document.querySelector('.note[data-id="' + id + '"]');
+  var id = pendingDeleteId;
+  var noteEl = document.querySelector('.note[data-id="' + id + '"]');
   if (noteEl) noteEl.classList.add('removing');
 
   setTimeout(async function() {
@@ -389,14 +431,11 @@ function confirmExport() {
     closeExportModal();
     return;
   }
-  const data = {
-    version: '1.0', exportDate: new Date().toISOString(),
-    count: notes.length, notes: notes
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const today = new Date().toISOString().split('T')[0];
+  var data = { version: '1.0', exportDate: new Date().toISOString(), count: notes.length, notes: notes };
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var today = new Date().toISOString().split('T')[0];
   a.href = url;
   a.download = 'my-notes-backup-' + today + '.json';
   document.body.appendChild(a);
@@ -409,12 +448,12 @@ function confirmExport() {
 
 // ====== Import ======
 function importNotes(event) {
-  const file = event.target.files[0];
+  var file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const data = JSON.parse(e.target.result);
+      var data = JSON.parse(e.target.result);
       if (!data.notes || !Array.isArray(data.notes)) {
         showToast('❌ فایل نامعتبر!', true);
         event.target.value = '';
@@ -441,23 +480,21 @@ function closeImportModal() {
 }
 async function confirmImport() {
   if (!pendingImportData) return;
-  const mode = document.querySelector('input[name="importMode"]:checked').value;
+  var mode = document.querySelector('input[name="importMode"]:checked').value;
 
   try {
     if (mode === 'replace') {
-      for (let i = 0; i < notes.length; i++) {
+      for (var i = 0; i < notes.length; i++) {
         await authFetch(API_URL + '/notes/' + notes[i].id, { method: 'DELETE' });
       }
     }
-    for (let i = 0; i < pendingImportData.length; i++) {
-      const n = pendingImportData[i];
-      const newNote = {
+    for (var j = 0; j < pendingImportData.length; j++) {
+      var n = pendingImportData[j];
+      var newNote = {
         id: mode === 'replace' ? n.id : Date.now().toString() + Math.random().toString(36).substr(2, 5),
         title: n.title, content: n.content, category: n.category, date: n.date
       };
-      await authFetch(API_URL + '/notes', {
-        method: 'POST', body: JSON.stringify(newNote)
-      });
+      await authFetch(API_URL + '/notes', { method: 'POST', body: JSON.stringify(newNote) });
     }
     await loadNotes();
     showToast('✅ ' + pendingImportData.length + ' یادداشت اضافه شد!');
@@ -467,19 +504,17 @@ async function confirmImport() {
   closeImportModal();
 }
 
-// ====== مدیریت کیبورد ======
+// ====== کیبورد ======
 function handleKeyboard() {
-  const modalOverlay = document.getElementById('modalOverlay');
+  var modalOverlay = document.getElementById('modalOverlay');
   if (!modalOverlay || !modalOverlay.classList.contains('active')) return;
-  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const wh = window.innerHeight;
+  var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  var wh = window.innerHeight;
   if (vh < wh - 150) {
     modalOverlay.classList.add('keyboard-open');
-    const el = document.activeElement;
+    var el = document.activeElement;
     if (el && el.tagName !== 'BODY') {
-      setTimeout(function() {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+      setTimeout(function() { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
     }
   } else {
     modalOverlay.classList.remove('keyboard-open');
@@ -501,12 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    closeModal();
-    closeDeleteModal();
-    closeExportModal();
-    closeImportModal();
-    closeGuide();
-    closeMenu();
+    closeModal(); closeDeleteModal(); closeExportModal(); closeImportModal(); closeGuide(); closeMenu();
   }
 });
 
