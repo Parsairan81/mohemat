@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>✏️ دفترچه یادداشت من</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffd60a">
 <link rel="apple-touch-icon" href="android-chrome-192x192.png">
@@ -13,7 +13,6 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="یادداشت">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -22,20 +21,19 @@
   <div class="auth-box">
     <div class="auth-logo">✏️</div>
     <h1 class="auth-title">دفترچه یادداشت</h1>
-    <p class="auth-subtitle">برای شروع، با حساب گوگل وارد شو</p>
-    <div id="g_id_onload"
-         data-client_id="150383359779-70gbem0j167kljr12fqlh52ege41edms.apps.googleusercontent.com"
-         data-callback="handleGoogleLogin"
-         data-auto_prompt="false">
+    <p class="auth-subtitle" id="authSubtitle">اسم و رمزت رو وارد کن</p>
+
+    <div class="simple-auth-form">
+      <div class="input-wrapper">
+        <input type="text" id="simpleName" placeholder="اسم شما..." autocomplete="username" maxlength="30">
+      </div>
+      <div class="input-wrapper">
+        <input type="password" id="simplePass" placeholder="رمز دلخواه..." autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary btn-full" id="loginBtn" onclick="simpleLogin()">ورود / ثبت‌نام</button>
+      <p class="auth-hint" id="authHint">اگه بار اولته، حساب خودکار ساخته می‌شه ✅</p>
     </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large"
-         data-theme="filled_black"
-         data-text="signin_with"
-         data-shape="pill"
-         data-logo_alignment="left">
-    </div>
+
     <p class="auth-note">با ورود، قوانین استفاده را می‌پذیرید</p>
   </div>
 </div>
@@ -47,7 +45,6 @@
   <div class="bg-glow two"></div>
   <div class="floating-pencils" id="floatingPencils"></div>
 
-  <!-- هدر -->
   <header>
     <h1>
       <span class="pencil">✏️</span>
@@ -70,31 +67,27 @@
     </div>
   </header>
 
-  <!-- پیام خوش‌آمد (بعد ۵ ثانیه محو می‌شه) -->
   <div class="welcome-bar" id="welcomeBar">
-    <img class="welcome-avatar" id="welcomeAvatar" src="" alt="">
+    <div class="welcome-avatar" id="welcomeAvatar">👤</div>
     <span>سلام <strong id="welcomeName"></strong>! خوش اومدی 👋</span>
   </div>
 
-  <!-- جستجو -->
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
   </div>
 
-  <!-- فیلترها -->
   <div class="filters" id="filters"></div>
 
-  <!-- یادداشت‌ها -->
   <div class="notes-container" id="notesContainer"></div>
 
   <!-- منوی کشویی راست -->
   <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeMenu()"></div>
   <aside class="side-menu" id="sideMenu">
     <div class="side-menu-header">
-      <img class="side-menu-avatar" id="menuAvatar" src="" alt="">
+      <div class="side-menu-avatar" id="menuAvatar">👤</div>
       <div class="side-menu-info">
         <div class="side-menu-name" id="menuName"></div>
-        <div class="side-menu-email" id="menuEmail"></div>
+        <div class="side-menu-email">کاربر دفترچه یادداشت</div>
       </div>
       <button class="side-menu-close" onclick="closeMenu()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -312,6 +305,6 @@
     });
   }
 </script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
