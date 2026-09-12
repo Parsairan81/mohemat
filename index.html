@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>✏️ دفترچه یادداشت من</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffd60a">
 <link rel="apple-touch-icon" href="android-chrome-192x192.png">
@@ -47,6 +47,7 @@
   <div class="bg-glow two"></div>
   <div class="floating-pencils" id="floatingPencils"></div>
 
+  <!-- هدر -->
   <header>
     <h1>
       <span class="pencil">✏️</span>
@@ -60,7 +61,7 @@
         <span>➕</span> یادداشت جدید
       </button>
       <button class="menu-toggle" onclick="toggleMenu()" title="منو">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
           <line x1="3" y1="6" x2="21" y2="6"/>
           <line x1="3" y1="12" x2="21" y2="12"/>
           <line x1="3" y1="18" x2="21" y2="18"/>
@@ -69,17 +70,21 @@
     </div>
   </header>
 
+  <!-- پیام خوش‌آمد (بعد ۵ ثانیه محو می‌شه) -->
   <div class="welcome-bar" id="welcomeBar">
     <img class="welcome-avatar" id="welcomeAvatar" src="" alt="">
     <span>سلام <strong id="welcomeName"></strong>! خوش اومدی 👋</span>
   </div>
 
+  <!-- جستجو -->
   <div class="search-box">
     <input type="text" id="searchInput" placeholder="🔍 جستجو در یادداشت‌ها..." oninput="renderNotes()">
   </div>
 
+  <!-- فیلترها -->
   <div class="filters" id="filters"></div>
 
+  <!-- یادداشت‌ها -->
   <div class="notes-container" id="notesContainer"></div>
 
   <!-- منوی کشویی راست -->
@@ -100,14 +105,16 @@
     </div>
 
     <div class="side-menu-section">
-      <div class="side-menu-label">🎨 رنگ منو</div>
+      <div class="side-menu-label">🎨 رنگ تم سایت</div>
       <div class="color-picker" id="colorPicker">
-        <button class="color-dot" data-color="indigo" style="background:#3f3d8b;" title="نیلی"></button>
         <button class="color-dot active" data-color="yellow" style="background:#ffd60a;" title="زرد"></button>
-        <button class="color-dot" data-color="blue" style="background:#2563eb;" title="آبی"></button>
-        <button class="color-dot" data-color="black" style="background:#1a1a1a;" title="مشکی"></button>
+        <button class="color-dot" data-color="indigo" style="background:#6366f1;" title="نیلی"></button>
+        <button class="color-dot" data-color="blue" style="background:#3b82f6;" title="آبی"></button>
         <button class="color-dot" data-color="green" style="background:#10b981;" title="سبز"></button>
         <button class="color-dot" data-color="pink" style="background:#ec4899;" title="صورتی"></button>
+        <button class="color-dot" data-color="purple" style="background:#a855f7;" title="بنفش"></button>
+        <button class="color-dot" data-color="orange" style="background:#f97316;" title="نارنجی"></button>
+        <button class="color-dot" data-color="dark" style="background:#1a1a1a;" title="تاریک"></button>
       </div>
     </div>
 
@@ -265,45 +272,27 @@
       <div class="guide-content">
         <div class="guide-item">
           <div class="guide-icon">➕</div>
-          <div>
-            <strong>یادداشت جدید</strong>
-            <p>برای ساختن یادداشت جدید، روی دکمه‌ی زرد بالای صفحه بزن.</p>
-          </div>
+          <div><strong>یادداشت جدید</strong><p>برای ساختن یادداشت جدید، روی دکمه‌ی زرد بالای صفحه بزن.</p></div>
         </div>
         <div class="guide-item">
           <div class="guide-icon">🔍</div>
-          <div>
-            <strong>جستجو</strong>
-            <p>می‌تونی توی عنوان و متن یادداشت‌ها جستجو کنی.</p>
-          </div>
+          <div><strong>جستجو</strong><p>می‌تونی توی عنوان و متن یادداشت‌ها جستجو کنی.</p></div>
         </div>
         <div class="guide-item">
           <div class="guide-icon">🏷️</div>
-          <div>
-            <strong>دسته‌بندی</strong>
-            <p>یادداشت‌هات رو توی دسته‌های مهم، آموزش، کار، شخصی و ایده بذار.</p>
-          </div>
+          <div><strong>دسته‌بندی</strong><p>یادداشت‌هات رو توی دسته‌های مختلف بذار.</p></div>
         </div>
         <div class="guide-item">
           <div class="guide-icon">🎨</div>
-          <div>
-            <strong>رنگ منو</strong>
-            <p>از منوی راست می‌تونی رنگ دلخواهت رو انتخاب کنی.</p>
-          </div>
+          <div><strong>رنگ تم سایت</strong><p>از منوی راست می‌تونی رنگ کل سایت رو تغییر بدی.</p></div>
         </div>
         <div class="guide-item">
           <div class="guide-icon">💾</div>
-          <div>
-            <strong>بکاپ</strong>
-            <p>از دکمه‌های ⬇️ و ⬆️ بالای صفحه می‌تونی از یادداشت‌هات بکاپ بگیری یا بارگذاری کنی.</p>
-          </div>
+          <div><strong>بکاپ</strong><p>از دکمه‌های ⬇️ و ⬆️ بالای صفحه بکاپ بگیر یا بارگذاری کن.</p></div>
         </div>
         <div class="guide-item">
           <div class="guide-icon">📞</div>
-          <div>
-            <strong>ارتباط با ما</strong>
-            <p>از منوی راست می‌تونی با ما تماس بگیری یا توی شبکه‌های اجتماعی دنبال کنی.</p>
-          </div>
+          <div><strong>ارتباط با ما</strong><p>از منوی راست با ما در تماس باش.</p></div>
         </div>
       </div>
       <div class="modal-actions">
@@ -323,6 +312,6 @@
     });
   }
 </script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
