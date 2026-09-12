@@ -89,9 +89,53 @@ body::after {
 .auth-logo { font-size: 4rem; margin-bottom: 0.5rem; animation: wiggle 2.5s ease-in-out infinite; }
 @keyframes wiggle { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
 .auth-title { font-size: 1.6rem; color: var(--black); margin-bottom: 0.5rem; font-weight: 900; }
-.auth-subtitle { color: var(--black-soft); margin-bottom: 2rem; font-size: 0.95rem; opacity: 0.8; }
-.auth-box .g_id_signin { display: flex; justify-content: center; margin: 1.5rem 0; }
-.auth-note { font-size: 0.75rem; opacity: 0.6; margin-top: 1.5rem; }
+.auth-subtitle { color: var(--black-soft); margin-bottom: 1.5rem; font-size: 0.95rem; opacity: 0.8; }
+
+.simple-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.simple-auth-form input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--black);
+  outline: none;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.simple-auth-form input:focus {
+  border-color: var(--yellow-dark);
+  box-shadow: 0 0 0 4px rgba(255,214,10,0.25);
+}
+.btn-full {
+  width: 100%;
+  justify-content: center;
+  padding: 0.9rem 1.3rem;
+  font-size: 1rem;
+  margin-top: 0.3rem;
+}
+.btn-full:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.auth-hint {
+  font-size: 0.8rem;
+  color: var(--black-soft);
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+.auth-note { font-size: 0.75rem; opacity: 0.6; margin-top: 1rem; }
 
 /* ====== پیام خوش‌آمد ====== */
 .welcome-bar {
