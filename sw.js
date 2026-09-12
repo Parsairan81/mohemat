@@ -1,5 +1,5 @@
 // Service Worker - دفترچه یادداشت من
-const CACHE_NAME = 'memo-v6';
+const CACHE_NAME = 'memo-v7';
 const urlsToCache = [
   './',
   './index.html',
