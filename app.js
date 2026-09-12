@@ -1,9 +1,8 @@
 // ================================================================
-//  app.js - دفترچه یادداشت با Google OAuth + تم داینامیک
+//  app.js - دفترچه یادداشت با ورود ساده
 // ================================================================
 
 const API_URL = 'https://my-memo-worker.parsaeshi259.workers.dev';
-const CLIENT_ID = '150383359779-70gbem0j167kljr12fqlh52ege41edms.apps.googleusercontent.com';
 
 let notes = [];
 let currentFilter = 'همه';
@@ -14,17 +13,17 @@ let pendingImportData = null;
 const categories = ['همه', 'مهم', 'آموزش', 'کار', 'شخصی', 'ایده'];
 
 // ================================================================
-// تم‌های رنگی سایت
+// تم‌های رنگی
 // ================================================================
 const THEMES = {
-  yellow:  { primary: '#ffd60a', dark: '#ffc300', text: '#1a1a1a', bg1: '#fffdf5', bg2: '#ffffff', bg3: '#fffbe8' },
-  indigo:  { primary: '#818cf8', dark: '#6366f1', text: '#1a1a1a', bg1: '#f5f3ff', bg2: '#ffffff', bg3: '#ede9fe' },
-  blue:    { primary: '#60a5fa', dark: '#3b82f6', text: '#1a1a1a', bg1: '#f0f9ff', bg2: '#ffffff', bg3: '#e0f2fe' },
-  green:   { primary: '#34d399', dark: '#10b981', text: '#1a1a1a', bg1: '#f0fdf4', bg2: '#ffffff', bg3: '#dcfce7' },
-  pink:    { primary: '#f472b6', dark: '#ec4899', text: '#1a1a1a', bg1: '#fdf2f8', bg2: '#ffffff', bg3: '#fce7f3' },
-  purple:  { primary: '#c084fc', dark: '#a855f7', text: '#1a1a1a', bg1: '#faf5ff', bg2: '#ffffff', bg3: '#f3e8ff' },
-  orange:  { primary: '#fb923c', dark: '#f97316', text: '#1a1a1a', bg1: '#fff7ed', bg2: '#ffffff', bg3: '#ffedd5' },
-  dark:    { primary: '#ffd60a', dark: '#ffc300', text: '#ffffff', bg1: '#0f0f0f', bg2: '#1a1a1a', bg3: '#2b2b2b' }
+  yellow:  { primary: '#ffd60a', dark: '#ffc300', bg1: '#fffdf5', bg2: '#ffffff', bg3: '#fffbe8', accent: 'rgba(255,214,10,0.35)', accentSoft: 'rgba(255,214,10,0.15)' },
+  indigo:  { primary: '#818cf8', dark: '#6366f1', bg1: '#f5f3ff', bg2: '#f9f7ff', bg3: '#ede9fe', accent: 'rgba(129,140,248,0.25)', accentSoft: 'rgba(129,140,248,0.10)' },
+  blue:    { primary: '#60a5fa', dark: '#3b82f6', bg1: '#f0f9ff', bg2: '#f8fbff', bg3: '#e0f2fe', accent: 'rgba(96,165,250,0.25)', accentSoft: 'rgba(96,165,250,0.10)' },
+  green:   { primary: '#34d399', dark: '#10b981', bg1: '#f0fdf4', bg2: '#f7fefa', bg3: '#dcfce7', accent: 'rgba(52,211,153,0.25)', accentSoft: 'rgba(52,211,153,0.10)' },
+  pink:    { primary: '#f472b6', dark: '#ec4899', bg1: '#fdf2f8', bg2: '#fef9fc', bg3: '#fce7f3', accent: 'rgba(244,114,182,0.25)', accentSoft: 'rgba(244,114,182,0.10)' },
+  purple:  { primary: '#c084fc', dark: '#a855f7', bg1: '#faf5ff', bg2: '#fcfaff', bg3: '#f3e8ff', accent: 'rgba(192,132,252,0.25)', accentSoft: 'rgba(192,132,252,0.10)' },
+  orange:  { primary: '#fb923c', dark: '#f97316', bg1: '#fff7ed', bg2: '#fffbf7', bg3: '#ffedd5', accent: 'rgba(251,146,60,0.25)', accentSoft: 'rgba(251,146,60,0.10)' },
+  dark:    { primary: '#ffd60a', dark: '#ffc300', bg1: '#0f0f0f', bg2: '#1a1a1a', bg3: '#2b2b2b', accent: 'rgba(255,214,10,0.15)', accentSoft: 'rgba(255,214,10,0.05)' }
 };
 
 function applyTheme(themeName) {
@@ -35,6 +34,8 @@ function applyTheme(themeName) {
   root.style.setProperty('--bg1', theme.bg1);
   root.style.setProperty('--bg2', theme.bg2);
   root.style.setProperty('--bg3', theme.bg3);
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--accent-soft', theme.accentSoft);
 
   if (themeName === 'dark') {
     document.body.classList.add('dark-mode');
@@ -43,60 +44,77 @@ function applyTheme(themeName) {
   }
 }
 
-// ====== Google Login ======
-function handleGoogleLogin(response) {
-  if (!response.credential) return;
-  authToken = response.credential;
+// ================================================================
+// ورود ساده
+// ================================================================
+async function simpleLogin() {
+  const nameEl = document.getElementById('simpleName');
+  const passEl = document.getElementById('simplePass');
+  const btn = document.getElementById('loginBtn');
 
-  fetch(API_URL + '/auth/verify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token: authToken })
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data.success) {
-      currentUser = data.user;
-      localStorage.setItem('authToken', authToken);
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      showMainApp();
-      loadNotes();
-      loadSettings();
-    } else {
-      alert('خطا در ورود: ' + data.error);
+  const name = nameEl.value.trim();
+  const password = passEl.value.trim();
+
+  if (!name || !password) {
+    showToast('اسم و رمز رو وارد کن!', true);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'لطفاً صبر کن...';
+
+  try {
+    const res = await fetch(API_URL + '/auth/simple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, password: password })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      showToast('خطا: ' + (data.error || 'مشکل'), true);
+      btn.disabled = false;
+      btn.textContent = 'ورود / ثبت‌نام';
+      return;
     }
-  })
-  .catch(function(err) {
-    alert('خطا در اتصال: ' + err.message);
-  });
+
+    // ذخیره توکن
+    authToken = data.token;
+    currentUser = data.user;
+    localStorage.setItem('authToken', authToken);
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    showMainApp();
+    loadNotes();
+    loadSettings();
+
+    if (data.isNew) {
+      showToast('🎉 خوش اومدی ' + currentUser.name + '!');
+    } else {
+      showToast('👋 خوش برگشتی ' + currentUser.name + '!');
+    }
+
+  } catch (err) {
+    showToast('خطا در اتصال: ' + err.message, true);
+    btn.disabled = false;
+    btn.textContent = 'ورود / ثبت‌نام';
+  }
 }
 
-// ====== نمایش اپ ======
+// ================================================================
+// نمایش اپ
+// ================================================================
 function showMainApp() {
   document.getElementById('authOverlay').style.display = 'none';
   document.getElementById('mainApp').style.display = 'block';
 
   if (currentUser) {
-    var firstName = currentUser.name.split(' ')[0];
-    document.getElementById('welcomeName').textContent = firstName;
+    document.getElementById('welcomeName').textContent = currentUser.name;
     document.getElementById('menuName').textContent = currentUser.name;
-    document.getElementById('menuEmail').textContent = currentUser.email;
+    document.getElementById('welcomeAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+    document.getElementById('menuAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
 
-    // عکس با fallback
-    var pic = currentUser.picture || '';
-    var wAvatar = document.getElementById('welcomeAvatar');
-    var mAvatar = document.getElementById('menuAvatar');
-    if (pic) {
-      wAvatar.src = pic;
-      mAvatar.src = pic;
-      wAvatar.onerror = function() { this.style.display = 'none'; };
-      mAvatar.onerror = function() { this.style.display = 'none'; };
-    } else {
-      wAvatar.style.display = 'none';
-      mAvatar.style.display = 'none';
-    }
-
-    // پیام خوش‌آمد بعد ۵ ثانیه محو می‌شه
     setTimeout(function() {
       var wb = document.getElementById('welcomeBar');
       if (wb) {
@@ -114,48 +132,55 @@ function showMainApp() {
   initPencils();
 }
 
-// ====== خروج ======
+// ================================================================
+// خروج
+// ================================================================
 function logout() {
+  if (!confirm('مطمئنی می‌خوای خارج شی؟')) return;
   localStorage.removeItem('authToken');
   localStorage.removeItem('currentUser');
   authToken = null;
   currentUser = null;
   notes = [];
-  if (window.google && google.accounts && google.accounts.id) {
-    google.accounts.id.disableAutoSelect();
-  }
   location.reload();
 }
 
-// ====== بررسی ورود قبلی ======
-function checkExistingLogin() {
+// ================================================================
+// چک ورود قبلی
+// ================================================================
+async function checkExistingLogin() {
   var savedToken = localStorage.getItem('authToken');
   var savedUser = localStorage.getItem('currentUser');
 
-  if (savedToken && savedUser) {
-    authToken = savedToken;
-    currentUser = JSON.parse(savedUser);
+  if (!savedToken || !savedUser) return;
 
-    fetch(API_URL + '/auth/verify', {
+  try {
+    var res = await fetch(API_URL + '/auth/check', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: authToken })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data.success) {
-        showMainApp();
-        loadNotes();
-        loadSettings();
-      } else {
-        logout();
-      }
-    })
-    .catch(function() { logout(); });
+      body: JSON.stringify({ token: savedToken })
+    });
+    var data = await res.json();
+
+    if (data.valid) {
+      authToken = savedToken;
+      currentUser = data.user;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      showMainApp();
+      loadNotes();
+      loadSettings();
+    } else {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+    }
+  } catch (err) {
+    console.log('auth check error:', err);
   }
 }
 
-// ====== مدادهای شناور ======
+// ================================================================
+// مدادهای شناور
+// ================================================================
 var pencilsInitialized = false;
 function initPencils() {
   if (pencilsInitialized) return;
@@ -174,7 +199,9 @@ function initPencils() {
   }
 }
 
-// ====== توابع کمکی ======
+// ================================================================
+// توابع کمکی
+// ================================================================
 function showToast(msg, isError) {
   var toast = document.createElement('div');
   toast.className = 'toast' + (isError ? ' error' : '');
@@ -203,7 +230,9 @@ function authFetch(url, options) {
   return fetch(url, options);
 }
 
-// ====== بارگذاری یادداشت‌ها ======
+// ================================================================
+// بارگذاری‌ها
+// ================================================================
 async function loadNotes() {
   try {
     var res = await authFetch(API_URL + '/notes');
@@ -216,7 +245,6 @@ async function loadNotes() {
   }
 }
 
-// ====== تنظیمات ======
 async function loadSettings() {
   try {
     var res = await authFetch(API_URL + '/settings');
@@ -240,7 +268,9 @@ async function saveSettings(settings) {
   } catch (err) { console.log('save settings error:', err); }
 }
 
-// ====== کلیک روی رنگ ======
+// ================================================================
+// کلیک روی رنگ
+// ================================================================
 document.addEventListener('click', function(e) {
   if (e.target.classList && e.target.classList.contains('color-dot')) {
     var color = e.target.dataset.color;
@@ -252,7 +282,9 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ====== منو ======
+// ================================================================
+// منو
+// ================================================================
 function toggleMenu() {
   document.getElementById('sideMenu').classList.toggle('open');
   document.getElementById('sideMenuOverlay').classList.toggle('open');
@@ -272,7 +304,9 @@ function closeGuide() {
   document.getElementById('guideModal').classList.remove('active');
 }
 
-// ====== فیلترها ======
+// ================================================================
+// فیلترها
+// ================================================================
 function renderFilters() {
   var container = document.getElementById('filters');
   if (!container) return;
@@ -286,7 +320,9 @@ function setFilter(cat) {
   renderNotes();
 }
 
-// ====== رندر یادداشت‌ها ======
+// ================================================================
+// رندر یادداشت‌ها
+// ================================================================
 function renderNotes() {
   var container = document.getElementById('notesContainer');
   if (!container) return;
@@ -327,7 +363,9 @@ function renderNotes() {
   }).join('');
 }
 
-// ====== مودال ======
+// ================================================================
+// مودال
+// ================================================================
 function openModal(note) {
   var overlay = document.getElementById('modalOverlay');
   var title = document.getElementById('modalTitle');
@@ -351,7 +389,9 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
 }
 
-// ====== ذخیره ======
+// ================================================================
+// ذخیره یادداشت
+// ================================================================
 async function saveNote(e) {
   e.preventDefault();
   var id = document.getElementById('noteId').value;
@@ -387,7 +427,9 @@ function editNote(id) {
   if (note) openModal(note);
 }
 
-// ====== حذف ======
+// ================================================================
+// حذف
+// ================================================================
 function askDeleteNote(id) {
   pendingDeleteId = id;
   var note = notes.find(function(n) { return n.id == id; });
@@ -417,7 +459,9 @@ async function confirmDelete() {
   closeDeleteModal();
 }
 
-// ====== Export ======
+// ================================================================
+// Export / Import
+// ================================================================
 function openExportModal() {
   document.getElementById('exportCount').textContent = notes.length;
   document.getElementById('exportModal').classList.add('active');
@@ -446,7 +490,6 @@ function confirmExport() {
   showToast('✅ بکاپ دانلود شد!');
 }
 
-// ====== Import ======
 function importNotes(event) {
   var file = event.target.files[0];
   if (!file) return;
@@ -504,7 +547,9 @@ async function confirmImport() {
   closeImportModal();
 }
 
-// ====== کیبورد ======
+// ================================================================
+// کیبورد
+// ================================================================
 function handleKeyboard() {
   var modalOverlay = document.getElementById('modalOverlay');
   if (!modalOverlay || !modalOverlay.classList.contains('active')) return;
@@ -521,7 +566,26 @@ function handleKeyboard() {
   }
 }
 
-// ====== راه‌اندازی ======
+// ================================================================
+// Enter key در فرم ورود
+// ================================================================
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    var nameEl = document.getElementById('simpleName');
+    var passEl = document.getElementById('simplePass');
+    if (document.activeElement === nameEl || document.activeElement === passEl) {
+      e.preventDefault();
+      simpleLogin();
+    }
+  }
+  if (e.key === 'Escape') {
+    closeModal(); closeDeleteModal(); closeExportModal(); closeImportModal(); closeGuide(); closeMenu();
+  }
+});
+
+// ================================================================
+// راه‌اندازی
+// ================================================================
 document.addEventListener('DOMContentLoaded', function() {
   renderFilters();
   checkExistingLogin();
@@ -531,12 +595,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.visualViewport.addEventListener('scroll', handleKeyboard);
   } else {
     window.addEventListener('resize', handleKeyboard);
-  }
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    closeModal(); closeDeleteModal(); closeExportModal(); closeImportModal(); closeGuide(); closeMenu();
   }
 });
 
